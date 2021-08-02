@@ -1,0 +1,36 @@
+{
+  "name": "japatron",
+  "description": "To be done",
+  "license": "To be done",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monatheoctocat/my_package.git"
+  },
+  "keywords": [],
+  "author": "Miguel Angel Moreno",
+  "bugs": {
+    "url": "https://github.com/monatheoctocat/my_package/issues"
+  },
+  "scripts": {
+    "build": "tsc",
+    "ts": "ts-node",
+    "lint": "eslint src tests --ext ts",
+    "lint:fix": "yarn lint --fix",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "kuromoji": "^0.1.2",
+    "kuroshiro": "^1.2.0",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "eslint": "^7.32.0"
+  }
+}

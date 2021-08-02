@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "outDir": "dist",
+    "sourceRoot": "src",
+    "resolveJsonModule": true,
+    "sourceMap": true
+  }
+}
