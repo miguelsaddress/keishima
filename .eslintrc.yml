@@ -24,4 +24,5 @@ rules:
     - error
     - never
   '@typescript-eslint/no-var-requires': 'off'
+  'no-case-declarations': 'off'
 
