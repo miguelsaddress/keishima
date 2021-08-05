@@ -1,22 +1,5 @@
-import { Kuroshiro, Sillabary } from '../../src/Kuroshiro'
-import { RomanizationSystem } from '../../src/Kuroshiro/util'
-
-describe('Kuroshiro Node Initialization Test', () => {
-  let kuroshiro: Kuroshiro
-
-  beforeAll(async () => {
-    kuroshiro = new Kuroshiro()
-  })
-
-  it('Repeated Initialization', async () => {
-    await kuroshiro.init()
-
-    await expect(kuroshiro.init()).rejects.toEqual(
-      new Error('Kuroshiro has already been initialized.')
-    )
-
-  })
-})
+import { ConversionMode, Kuroshiro, Sillabary } from '../../src/Kuroshiro'
+import { RomanizationSystem } from '../../src/Kuroshiro/RawRomajiConverter'
 
 describe('Kuroshiro Class Tests', () => {
   const EXAMPLE_TEXT = '感じ取れたら手を繋ごう、重なるのは人生のライン and レミリア最高！'
@@ -27,7 +10,6 @@ describe('Kuroshiro Class Tests', () => {
 
   beforeAll(async () => {
     kuroshiro = new Kuroshiro()
-    await kuroshiro.init()
   })
 
   describe('Convert Kanji to Hiragana', () => {
@@ -45,7 +27,7 @@ describe('Kuroshiro Class Tests', () => {
         hiragana: 'せきがはらのたたかい'
       }
     ])('Should respect romaji and katakana', async ({ text, hiragana }) => {
-      const result = await kuroshiro.convert(text, { to: 'hiragana' })
+      const result = await kuroshiro.convert(text, { sillabary: Sillabary.Hiragana })
       expect(result).toEqual(hiragana)
     })
   })
@@ -61,7 +43,7 @@ describe('Kuroshiro Class Tests', () => {
         katakana: 'ア イ ウ エ オ カ キ ク ケ コ サ シ ス セ ソ タ チ ツ テ ト ナ ニ ヌ ネ ノ ハ ヒ フ ヘ ホ マ ミ ム メ モ ヤ ユ ヨ ラ リ ル レ ロ ワ ヲ ン ガ ギ グ ゲ ゴ ザ ジ ズ ゼ ゾ ダ ヂ ヅ デ ド バ ビ ブ ベ ボ パ ピ プ ペ ポ キャ キュ キョ シャ シュ ショ チャ チュ チョ ニャ ニュ ニョ ヒャ ヒュ ヒョ ミャ ミュ ミョ リャ リュ リョ ギャ ギュ ギョ ジャ ジュ ジョ ビャ ビュ ビョ ピャ ピュ ピョ'
       }
     ])('Should respect romaji and katakana', async ({ text, katakana }) => {
-      const result = await kuroshiro.convert(text, { to: 'katakana' })
+      const result = await kuroshiro.convert(text, { sillabary: Sillabary.Katakana })
       expect(result).toEqual(katakana)
     })
 
@@ -69,12 +51,12 @@ describe('Kuroshiro Class Tests', () => {
 
   describe('Kanji to Romaji with Hepburn-Shiki system', () => {
     it('Should convert using the selected system', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { to: 'romaji', romajiSystem: RomanizationSystem.Hepburn })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Hepburn })
       expect(result).toEqual('kanjitoretarateotsunagō,kasanarunowajinseinorain and remiriasaikō!')
     })
 
     it('Should be able to transliterate Kanji to Romaji with sokuon', async () => {
-      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: 'spaced', to: 'romaji', romajiSystem: RomanizationSystem.Hepburn })
+      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: ConversionMode.Spaced, sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Hepburn })
       expect(result).toEqual('katte ni katchatta n da')
     })
 
@@ -132,19 +114,19 @@ describe('Kuroshiro Class Tests', () => {
         expected: 'iin'
       },
     ])('Should respect romaji and katakana', async ({ kanji, expected }) => {
-      const result = await kuroshiro.convert(kanji, { to: 'romaji', romajiSystem: RomanizationSystem.Hepburn})
+      const result = await kuroshiro.convert(kanji, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Hepburn})
       expect(result).toEqual(expected)
     })
   })
 
   describe('Kanji to Romaji with Passport-Shiki system', () => {
     it('Should convert using the selected system', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { to: 'romaji', romajiSystem: RomanizationSystem.Passport })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Passport })
       expect(result).toEqual('kanjitoretarateotsunago,kasanarunowajinseinorain and remiriasaiko!')
     })
 
     it('Should be able to transliterate Kanji to Romaji with sokuon', async () => {
-      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: 'spaced', to: 'romaji', romajiSystem: RomanizationSystem.Passport })
+      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: ConversionMode.Spaced, sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Passport })
       expect(result).toEqual('katte ni katchatta n da')
     })
 
@@ -202,7 +184,7 @@ describe('Kuroshiro Class Tests', () => {
         expected: 'iin'
       },
     ])('Should respect romaji and katakana', async ({ kanji, expected }) => {
-      const result = await kuroshiro.convert(kanji, { to: 'romaji', romajiSystem: RomanizationSystem.Passport })
+      const result = await kuroshiro.convert(kanji, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Passport })
       expect(result).toEqual(expected)
     })
 
@@ -210,12 +192,12 @@ describe('Kuroshiro Class Tests', () => {
 
   describe('Kanji to Romaji with Nippon-Shiki system', () => {
     it('Should convert using the selected system', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { to: 'romaji', romajiSystem: RomanizationSystem.Nippon })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Nippon })
       expect(result).toEqual('kanzitoretaratewotunagô,kasanarunowazinseinorain and remiriasaikô!')
     })
 
     it('Should be able to transliterate Kanji to Romaji with sokuon', async () => {
-      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: 'spaced', to: 'romaji', romajiSystem: RomanizationSystem.Nippon })
+      const result = await kuroshiro.convert('勝手に買っちゃったんだ', { mode: ConversionMode.Spaced, sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Nippon })
       expect(result).toEqual('katte ni kattyatta n da')
     })
 
@@ -273,7 +255,7 @@ describe('Kuroshiro Class Tests', () => {
         expected: 'iin'
       },
     ])('Should respect romaji and katakana', async ({ kanji, expected }) => {
-      const result = await kuroshiro.convert(kanji, { to: 'romaji', romajiSystem: RomanizationSystem.Nippon })
+      const result = await kuroshiro.convert(kanji, { sillabary: Sillabary.Romaji, romajiSystem: RomanizationSystem.Nippon })
       expect(result).toEqual(expected)
     })
 
@@ -283,22 +265,21 @@ describe('Kuroshiro Class Tests', () => {
     it.each([
       {
         text: EXAMPLE_TEXT,
-        sillabary: 'hiragana',
+        sillabary: Sillabary.Hiragana,
         expected: 'かんじとれ たら て を つなごう 、 かさなる の は じんせい の ライン   and   レミ リア さいこう ！',
       },
       {
         text: EXAMPLE_TEXT,
-        sillabary: 'katakana',
+        sillabary: Sillabary.Katakana,
         expected: 'カンジトレ タラ テ ヲ ツナゴウ 、 カサナル ノ ハ ジンセイ ノ ライン   and   レミ リア サイコウ ！',
       },
       {
         text: EXAMPLE_TEXT,
-        sillabary: 'romaji',
+        sillabary: Sillabary.Romaji,
         expected: 'kanjitore tara te o tsunagō , kasanaru no wa jinsei no rain   and   remi ria saikō !'
       },
     ])('Should respect romaji and katakana and space every word', async ({ text, sillabary, expected }) => {
-      const to: Sillabary = sillabary as Sillabary
-      const result = await kuroshiro.convert(text, { to, mode: 'spaced'})
+      const result = await kuroshiro.convert(text, { sillabary, mode: ConversionMode.Spaced})
       expect(result).toEqual(expected)
     })
   })
@@ -334,38 +315,38 @@ describe('Kuroshiro Class Tests', () => {
         expected: '渡[わた]り鳥[どり]'
       }
     ])('Should convert given text as expected to hiragana', async ({ text, expected }) => {
-      const result = await kuroshiro.convert(text, { mode: 'okurigana', to: 'hiragana' })
+      const result = await kuroshiro.convert(text, { mode: ConversionMode.Okurigana, sillabary: Sillabary.Hiragana })
       expect(result).toEqual(expected)
     })
 
     it('Should convert given text as expected to katakana', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: 'okurigana', to: 'katakana' })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: ConversionMode.Okurigana, sillabary: Sillabary.Katakana })
       expect(result).toEqual('感[カン]じ取[ト]れたら手[テ]を繋[ツナ]ごう、重[カサ]なるのは人生[ジンセイ]のライン and レミリア最高[サイコウ]！')
     })
 
     it('Should convert given text as expected to katakana', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: 'okurigana', to: 'katakana' })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: ConversionMode.Okurigana, sillabary: Sillabary.Katakana })
       expect(result).toEqual('感[カン]じ取[ト]れたら手[テ]を繋[ツナ]ごう、重[カサ]なるのは人生[ジンセイ]のライン and レミリア最高[サイコウ]！')
     })
 
     it('Kanji to Romaji with okurigana', async () => {
       const ori = EXAMPLE_TEXT
-      const result = await kuroshiro.convert(ori, { mode: 'okurigana', to: 'romaji' })
+      const result = await kuroshiro.convert(ori, { mode: ConversionMode.Okurigana, sillabary: Sillabary.Romaji })
       expect(result).toEqual('感[kan]じ取[to]れたら手[te]を繋[tsuna]ごう、重[kasa]なるのは人生[jinsei]のライン and レミリア最高[saikō]！')
     })
   })
 
   describe('Kanji conversion with okurigana', () => {
     it('Should convert to Hiragana with furigana as expected', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: 'furigana', to: 'hiragana' })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: ConversionMode.Furigana, sillabary: Sillabary.Hiragana })
       expect(result).toEqual('<ruby>感<rp>[</rp><rt>かん</rt><rp>]</rp></ruby>じ<ruby>取<rp>[</rp><rt>と</rt><rp>]</rp></ruby>れたら<ruby>手<rp>[</rp><rt>て</rt><rp>]</rp></ruby>を<ruby>繋<rp>[</rp><rt>つな</rt><rp>]</rp></ruby>ごう、<ruby>重<rp>[</rp><rt>かさ</rt><rp>]</rp></ruby>なるのは<ruby>人生<rp>[</rp><rt>じんせい</rt><rp>]</rp></ruby>のライン and レミリア<ruby>最高<rp>[</rp><rt>さいこう</rt><rp>]</rp></ruby>！')
     })
     it('Should convert to Katakana with furigana as expected', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: 'furigana', to: 'katakana' })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: ConversionMode.Furigana, sillabary: Sillabary.Katakana })
       expect(result).toEqual('<ruby>感<rp>[</rp><rt>カン</rt><rp>]</rp></ruby>じ<ruby>取<rp>[</rp><rt>ト</rt><rp>]</rp></ruby>れたら<ruby>手<rp>[</rp><rt>テ</rt><rp>]</rp></ruby>を<ruby>繋<rp>[</rp><rt>ツナ</rt><rp>]</rp></ruby>ごう、<ruby>重<rp>[</rp><rt>カサ</rt><rp>]</rp></ruby>なるのは<ruby>人生<rp>[</rp><rt>ジンセイ</rt><rp>]</rp></ruby>のライン and レミリア<ruby>最高<rp>[</rp><rt>サイコウ</rt><rp>]</rp></ruby>！')
     })
     it('Should convert to Romaji with furigana as expected', async () => {
-      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: 'furigana', to: 'romaji' })
+      const result = await kuroshiro.convert(EXAMPLE_TEXT, { mode: ConversionMode.Furigana, sillabary: Sillabary.Romaji })
       expect(result).toEqual('<ruby>感<rp>[</rp><rt>kan</rt><rp>]</rp>じ<rp>[</rp><rt>ji</rt><rp>]</rp>取<rp>[</rp><rt>to</rt><rp>]</rp>れ<rp>[</rp><rt>re</rt><rp>]</rp>た<rp>[</rp><rt>ta</rt><rp>]</rp>ら<rp>[</rp><rt>ra</rt><rp>]</rp>手<rp>[</rp><rt>te</rt><rp>]</rp>を<rp>[</rp><rt>o</rt><rp>]</rp>繋<rp>[</rp><rt>tsuna</rt><rp>]</rp>ご<rp>[</rp><rt>go</rt><rp>]</rp>う<rp>[</rp><rt>u</rt><rp>]</rp>、<rp>[</rp><rt>,</rt><rp>]</rp>重<rp>[</rp><rt>kasa</rt><rp>]</rp>な<rp>[</rp><rt>na</rt><rp>]</rp>る<rp>[</rp><rt>ru</rt><rp>]</rp>の<rp>[</rp><rt>no</rt><rp>]</rp>は<rp>[</rp><rt>wa</rt><rp>]</rp>人生<rp>[</rp><rt>jinsei</rt><rp>]</rp>の<rp>[</rp><rt>no</rt><rp>]</rp>ラ<rp>[</rp><rt>ra</rt><rp>]</rp>イ<rp>[</rp><rt>i</rt><rp>]</rp>ン<rp>[</rp><rt>n</rt><rp>]</rp> <rp>[</rp><rt> </rt><rp>]</rp>a<rp>[</rp><rt>a</rt><rp>]</rp>n<rp>[</rp><rt>n</rt><rp>]</rp>d<rp>[</rp><rt>d</rt><rp>]</rp> <rp>[</rp><rt> </rt><rp>]</rp>レ<rp>[</rp><rt>re</rt><rp>]</rp>ミ<rp>[</rp><rt>mi</rt><rp>]</rp>リ<rp>[</rp><rt>ri</rt><rp>]</rp>ア<rp>[</rp><rt>a</rt><rp>]</rp>最高<rp>[</rp><rt>saikō</rt><rp>]</rp>！<rp>[</rp><rt>!</rt><rp>]</rp></ruby>')
     })
   })

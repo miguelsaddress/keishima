@@ -1,15 +1,6 @@
 import { Util } from '../../src/Kuroshiro'
-import { patchTokens, RomanizationSystem } from '../../src/Kuroshiro/util'
 
 describe('Tests for Util Functions', () => {
-
-  describe('patchTokens', () => {
-    it('should return the right amount of tokens', () => {
-      const tokens = JSON.parse('[{"surface_form":"綺麗","pos":"名詞","reading":"きれい"},{"surface_form":"な","pos":"助動詞"},{"surface_form":"花","pos":"名詞","reading":"ハナ"},{"surface_form":"。","pos":"記号","reading":"。"},{"surface_form":"面白い","pos":"形容詞","reading":"オモシロイ"},{"surface_form":"映画","pos":"名詞","reading":"エイガ"},{"surface_form":"。","pos":"記号","reading":"。"},{"surface_form":"面白かっ","pos":"形容詞","reading":"オモシロカッ"},{"surface_form":"た","pos":"助動詞","reading":"タ"},{"surface_form":"です","pos":"助動詞","reading":"デス"},{"surface_form":"。","pos":"記号","reading":"。"},{"surface_form":"繋ご","pos":"動詞","reading":"ツナゴ"},{"surface_form":"う","pos":"助動詞","reading":"ウ"},{"surface_form":"うp","pos":"名詞"}]')
-      const result = patchTokens(tokens)
-      expect(result).toHaveLength(12)
-    })
-  })
 
   describe('isKana', () => {
     it('Should return true when the given character is hiragana', () => {
@@ -116,52 +107,6 @@ describe('Tests for Util Functions', () => {
       const text = 'サカナ'
       const result = Util.kanaToKatakana(text)
       expect(result).toEqual('サカナ')
-    })
-  })
-
-  describe('kanaToRomaji', () => {
-    it('can convert to nippon-shiki system', () => {
-      const text = 'サポート'
-      const result = Util.kanaToRomaji(text, RomanizationSystem.Nippon)
-      expect(result).toEqual('sapôto')
-    })
-
-    test('can convert to passport-shiki system', () => {
-      const text = 'サポート'
-      const result = Util.kanaToRomaji(text, RomanizationSystem.Passport)
-      expect(result).toEqual('sapoto')
-    })
-
-    describe('hepburn-shiki system', () => {
-      it('Identifies long vowels in katakana', () => {
-        const text = 'サポート'
-        const result = Util.kanaToRomaji(text, RomanizationSystem.Hepburn)
-        expect(result).toEqual('sapōto')
-      })
-
-      it('Identifies long vowels in hiragana', () => {
-        const text = 'そうです'
-        const result = Util.kanaToRomaji(text, RomanizationSystem.Hepburn)
-        expect(result).toEqual('soudesu')
-      })
-
-      it('Uses M before B', () => {
-        const text = 'ナンバ'
-        const result = Util.kanaToRomaji(text, RomanizationSystem.Hepburn)
-        expect(result).toEqual('namba')
-      })
-
-      it('Marks "N" followed by vowel with an apostrophe', () => {
-        const text = 'まんえんいか'
-        const result = Util.kanaToRomaji(text, RomanizationSystem.Hepburn)
-        expect(result).toEqual('man\'en\'ika')
-      })
-
-      it('Identifies tch', () => {
-        const text = 'まっちゃ'
-        const result = Util.kanaToRomaji(text, RomanizationSystem.Hepburn)
-        expect(result).toEqual('matcha')
-      })
     })
   })
 })
