@@ -1,10 +1,12 @@
 import { KuromojiAnalyzer, KuromojiToken } from '../analyzers/KuromojiAnalyzer'
 import { Converter } from './converters/Converter'
-import { NormalOrSpacedConverter } from './converters/NormalOrSpacedConverter'
 import { NullConverter } from './converters/NullConverter'
-import { OkuriganaOrFuriganaConverter } from './converters/OkuriganaOrFuriganaConverter'
+import { FuriganaConverter } from './converters/FuriganaConverter'
+import { OkuriganaConverter } from './converters/OkuriganaConverter'
 import { RomanizationSystem } from './RawRomajiConverter'
 import { TokensPatcher } from './TokensPatcher'
+import { NormalConverter } from './converters/NormalConverter'
+import { SpacedConverter } from './converters/SpacedConverter'
 
 export enum Sillabary {
   Hiragana = 'hiragana',
@@ -67,12 +69,17 @@ export class Kuroshiro {
   }
 
   private getConverter(options: ConvertOptions): Converter {
-    if (options.mode === ConversionMode.Normal || options.mode === ConversionMode.Spaced) {
-      return new NormalOrSpacedConverter(options)
+    switch(options.mode) {
+      case (ConversionMode.Normal):
+        return new NormalConverter(options)
+      case (ConversionMode.Spaced):
+        return new SpacedConverter(options)
+      case (ConversionMode.Okurigana):
+        return new OkuriganaConverter(options)
+      case (ConversionMode.Furigana):
+        return new FuriganaConverter(options)
+      default:
+        return new NullConverter(options)
     }
-    else if (options.mode === ConversionMode.Okurigana || options.mode === ConversionMode.Furigana) {
-      return new OkuriganaOrFuriganaConverter(options)
-    }
-    return new NullConverter(options)
   }
 }

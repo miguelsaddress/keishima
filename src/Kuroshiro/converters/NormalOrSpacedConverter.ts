@@ -4,10 +4,10 @@ import { RawRomajiConverter } from '../RawRomajiConverter'
 import { hasJapanese, hasKanji, hasKatakana, isKanji, isKatakana, toRawHiragana } from '../util'
 import { Converter } from './Converter'
 
-export class NormalOrSpacedConverter implements Converter {
+export abstract class NormalOrSpacedConverter implements Converter {
   private rawRomajiConverter: RawRomajiConverter
   private targetSillabary: Sillabary
-  private conversionMode: ConversionMode
+  protected conversionMode: ConversionMode
 
   constructor(private options: ConvertOptions) {
     this.rawRomajiConverter = new RawRomajiConverter()
@@ -26,29 +26,26 @@ export class NormalOrSpacedConverter implements Converter {
     }
   }
 
-  private joinKana(mappedTokens: string[]): string {
-    if (this.conversionMode === ConversionMode.Normal) {
-      return mappedTokens.join('')
-    }
-    return mappedTokens.join(' ')
+  protected abstract getCharactersJoiner(): string
+
+  protected joinKana(mappedTokens: string[]): string {
+    return mappedTokens.join(this.getCharactersJoiner())
+  }
+
+  protected convertRomaji(tokens: KuromojiToken[]): string {
+    return tokens.map(this.toRomaji.bind(this)).join(this.getCharactersJoiner())
+  }
+
+  protected toRomaji(token: KuromojiToken): string {
+    const preToken = hasJapanese(token.surfaceForm)
+      ? token.pronunciation || token.reading
+      : token.surfaceForm
+
+    return this.rawRomajiConverter.convert(preToken, this.options.romajiSystem!)
   }
 
   private convertKatakana(tokens: KuromojiToken[]): string {
     return this.joinKana(tokens.map(token => token.reading))
-  }
-
-  private convertRomaji(tokens: KuromojiToken[]): string {
-    const romajiConv = (token: KuromojiToken) => {
-      let preToken = hasJapanese(token.surfaceForm)
-        ? token.pronunciation || token.reading
-        : token.surfaceForm
-
-      return this.rawRomajiConverter.convert(preToken, this.options.romajiSystem!)
-    }
-    if (this.conversionMode === ConversionMode.Normal) {
-      return tokens.map(romajiConv).join('')
-    }
-    return tokens.map(romajiConv).join(' ')
   }
 
   private convertHiragana(tokens: KuromojiToken[]): string {

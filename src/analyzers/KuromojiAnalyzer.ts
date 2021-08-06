@@ -69,7 +69,7 @@ export class KuromojiAnalyzer {
     *     'pronunciation': 'クロシロ',  // 発音
     * }]
     */
-  async analyze(text: string = ''): Promise<KuromojiToken[]> {
+  async analyze(text = ''): Promise<KuromojiToken[]> {
     if (text.trim() === '') {
       return []
     }
