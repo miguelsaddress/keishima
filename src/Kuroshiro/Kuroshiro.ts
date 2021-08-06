@@ -62,7 +62,7 @@ export class Kuroshiro {
     }
 
     const rawTokens: KuromojiToken[] = await this.analyzer.analyze(str)
-    const tokens: KuromojiToken[] = new TokensPatcher(rawTokens).patch()
+    const tokens: KuromojiToken[] = new TokensPatcher().patch(rawTokens)
 
     const converter = this.getConverter(options)
     return converter.convert(tokens)

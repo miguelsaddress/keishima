@@ -2,68 +2,73 @@ import { KuromojiToken } from '../analyzers/KuromojiAnalyzer'
 import { hasHiragana, hasJapanese, isKana, toRawKatakana } from './util'
 
 export class TokensPatcher {
-  constructor(private tokens: KuromojiToken[]) {}
 
-  public patch(): KuromojiToken[] {
-    const tokens = [...this.tokens]
+  public patch(tokens: KuromojiToken[]): KuromojiToken[] {
     // patch for token structure
     for (let cr = 0; cr < tokens.length; cr++) {
       const currentToken = tokens[cr]
       if (hasJapanese(currentToken.surfaceForm)) {
         if (!currentToken.reading) {
-          const itsAllKana = currentToken.surfaceForm.split('').every(isKana)
-          if (itsAllKana) {
-            currentToken.reading = toRawKatakana(currentToken.surfaceForm)
-          }
-          else {
-            currentToken.reading = currentToken.surfaceForm
-          }
-        }
-        else if (hasHiragana(currentToken.reading)) {
+          currentToken.reading = (this.tokenIsAllKana(currentToken))
+           ? toRawKatakana(currentToken.surfaceForm)
+           : currentToken.surfaceForm
+        } else if (hasHiragana(currentToken.reading)) {
           currentToken.reading = toRawKatakana(currentToken.reading)
         }
-      }
-      else {
+      } else {
         currentToken.reading = currentToken.surfaceForm
       }
     }
 
+    this.patchForLongU(tokens)
+    this.patchForTsu(tokens)
+    return tokens
+  }
+
+  private patchForLongU(tokens: KuromojiToken[]) {
     // patch for 助動詞"う" after 動詞
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].position && tokens[i].position === '助動詞' && (tokens[i].surfaceForm === 'う' || tokens[i].surfaceForm === 'ウ')) {
-        if (i - 1 >= 0 && tokens[i - 1].position && tokens[i - 1].position === '動詞') {
-          tokens[i - 1].surfaceForm += 'う'
-          if (tokens[i - 1].pronunciation) {
-            tokens[i - 1].pronunciation += 'ー'
+      const token = tokens[i]
+      const prevToken = tokens[i - 1]
+      const isU = token.surfaceForm === 'う' || token.surfaceForm === 'ウ'
+      if (token.position && token.position === '助動詞' && isU) {
+        if (i - 1 >= 0 && prevToken.position && prevToken.position === '動詞') {
+          prevToken.surfaceForm += 'う'
+          if (prevToken.pronunciation) {
+            prevToken.pronunciation += 'ー'
+          } else {
+            prevToken.pronunciation = `${prevToken.reading}ー`
           }
-          else {
-            tokens[i - 1].pronunciation = `${tokens[i - 1].reading}ー`
-          }
-          tokens[i - 1].reading += 'ウ'
+          prevToken.reading += 'ウ'
           tokens.splice(i, 1)
           i--
         }
       }
     }
+  }
 
+  private patchForTsu(tokens: KuromojiToken[]) {
     // patch for "っ" at the tail of 動詞、形容詞
     for (let j = 0; j < tokens.length; j++) {
-      if (tokens[j].position && (tokens[j].position === '動詞' || tokens[j].position === '形容詞') && tokens[j].surfaceForm.length > 1 && (tokens[j].surfaceForm[tokens[j].surfaceForm.length - 1] === 'っ' || tokens[j].surfaceForm[tokens[j].surfaceForm.length - 1] === 'ッ')) {
+      const token = tokens[j]
+      const nextToken = tokens[j + 1]
+      if (token.position && (token.position === '動詞' || token.position === '形容詞') && token.surfaceForm.length > 1 && (token.surfaceForm[token.surfaceForm.length - 1] === 'っ' || token.surfaceForm[token.surfaceForm.length - 1] === 'ッ')) {
         if (j + 1 < tokens.length) {
-          tokens[j].surfaceForm += tokens[j + 1].surfaceForm
-          if (tokens[j].pronunciation) {
-            tokens[j].pronunciation += tokens[j + 1].pronunciation
+          token.surfaceForm += nextToken.surfaceForm
+          if (token.pronunciation) {
+            token.pronunciation += nextToken.pronunciation
+          } else {
+            token.pronunciation = `${token.reading}${nextToken.reading}`
           }
-          else {
-            tokens[j].pronunciation = `${tokens[j].reading}${tokens[j + 1].reading}`
-          }
-          tokens[j].reading += tokens[j + 1].reading
+          token.reading += nextToken.reading
           tokens.splice(j + 1, 1)
           j--
         }
       }
     }
+  }
 
-    return tokens
+  private tokenIsAllKana(currentToken: KuromojiToken) {
+    return currentToken.surfaceForm.split('').every(isKana)
   }
 }
