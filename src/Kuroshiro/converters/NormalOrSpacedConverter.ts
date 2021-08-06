@@ -1,82 +1,114 @@
-import { KuromojiParsedResponse } from '../../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
 import { ConversionMode, ConvertOptions, Sillabary } from '../Kuroshiro'
 import { RawRomajiConverter } from '../RawRomajiConverter'
 import { hasJapanese, hasKanji, hasKatakana, isKanji, isKatakana, toRawHiragana } from '../util'
 import { Converter } from './Converter'
 
 export class NormalOrSpacedConverter implements Converter {
-  constructor(private options: ConvertOptions, private tokens: KuromojiParsedResponse[]) {}
+  private rawRomajiConverter: RawRomajiConverter
+  private targetSillabary: Sillabary
+  private conversionMode: ConversionMode
 
-  public convert(): string {
-    switch (this.options.sillabary) {
+  constructor(private options: ConvertOptions) {
+    this.rawRomajiConverter = new RawRomajiConverter()
+    this.targetSillabary = options.sillabary
+    this.conversionMode = options.mode
+  }
+
+  public convert(tokens: KuromojiToken[]): string {
+    switch (this.targetSillabary) {
     case Sillabary.Katakana:
-      if (this.options.mode === ConversionMode.Normal) {
-        return this.tokens.map(token => token.reading).join('')
-      }
-      return this.tokens.map(token => token.reading).join(' ')
+      return this.convertKatakana(tokens)
     case Sillabary.Romaji:
-      const romajiConv = (token: KuromojiParsedResponse) => {
-        let preToken
-        if (hasJapanese(token.surface_form)) {
-          preToken = token.pronunciation || token.reading
-        }
-        else {
-          preToken = token.surface_form
-        }
-        const rawRomajiConverter = new RawRomajiConverter()
-        return rawRomajiConverter.convert(preToken, this.options.romajiSystem!)
-      }
-      if (this.options.mode === ConversionMode.Normal) {
-        return this.tokens.map(romajiConv).join('')
-      }
-      return this.tokens.map(romajiConv).join(' ')
+      return this.convertRomaji(tokens)
     case Sillabary.Hiragana:
-      for (let hi = 0; hi < this.tokens.length; hi++) {
-        if (hasKanji(this.tokens[hi].surface_form)) {
-          if (!hasKatakana(this.tokens[hi].surface_form)) {
-            this.tokens[hi].reading = toRawHiragana(this.tokens[hi].reading)
-          }
-          else {
-            // handle katakana-kanji-mixed tokens
-            this.tokens[hi].reading = toRawHiragana(this.tokens[hi].reading)
-            let tmp = ''
-            let hpattern = ''
-            for (let hc = 0; hc < this.tokens[hi].surface_form.length; hc++) {
-              if (isKanji(this.tokens[hi].surface_form[hc])) {
-                hpattern += '(.*)'
-              }
-              else {
-                hpattern += isKatakana(this.tokens[hi].surface_form[hc]) ? toRawHiragana(this.tokens[hi].surface_form[hc]) : this.tokens[hi].surface_form[hc]
-              }
-            }
-            const hreg = new RegExp(hpattern)
-            const hmatches = hreg.exec(this.tokens[hi].reading)
-            if (hmatches) {
-              let pickKJ = 0
-              for (let hc1 = 0; hc1 < this.tokens[hi].surface_form.length; hc1++) {
-                if (isKanji(this.tokens[hi].surface_form[hc1])) {
-                  tmp += hmatches[pickKJ + 1]
-                  pickKJ++
-                }
-                else {
-                  tmp += this.tokens[hi].surface_form[hc1]
-                }
-              }
-              this.tokens[hi].reading = tmp
-            }
-          }
-        }
-        else {
-          this.tokens[hi].reading = this.tokens[hi].surface_form
-        }
-      }
-      if (this.options.mode === ConversionMode.Normal) {
-        return this.tokens.map(token => token.reading).join('')
-      }
-      return this.tokens.map(token => token.reading).join(' ')
-    default:
-      throw new Error('Unknown option.to param')
+      return this.convertHiragana(tokens)
+    }
+  }
+
+  private joinKana(mappedTokens: string[]): string {
+    if (this.conversionMode === ConversionMode.Normal) {
+      return mappedTokens.join('')
+    }
+    return mappedTokens.join(' ')
+  }
+
+  private convertKatakana(tokens: KuromojiToken[]): string {
+    return this.joinKana(tokens.map(token => token.reading))
+  }
+
+  private convertRomaji(tokens: KuromojiToken[]): string {
+    const romajiConv = (token: KuromojiToken) => {
+      let preToken = hasJapanese(token.surfaceForm)
+        ? token.pronunciation || token.reading
+        : token.surfaceForm
+
+      return this.rawRomajiConverter.convert(preToken, this.options.romajiSystem!)
+    }
+    if (this.conversionMode === ConversionMode.Normal) {
+      return tokens.map(romajiConv).join('')
+    }
+    return tokens.map(romajiConv).join(' ')
+  }
+
+  private convertHiragana(tokens: KuromojiToken[]): string {
+    const convertedTokens = tokens.map(token => {
+      const reading = hasKanji(token.surfaceForm)
+        ? this.getReadingForKanaMixedWithKanji(token)
+        : token.surfaceForm
+
+      return { ...token, reading }
+    })
+
+    return this.joinKana(convertedTokens.map(token => token.reading))
+  }
+
+  private getReadingForKanaMixedWithKanji(currentToken: KuromojiToken): string {
+    if (!hasKatakana(currentToken.surfaceForm)) {
+      return toRawHiragana(currentToken.reading)
     }
 
+    // handle katakana-kanji-mixed tokens
+    const hiraganaReading = toRawHiragana(currentToken.reading)
+    return this.replaceKanjiWithReading(currentToken.surfaceForm, hiraganaReading)
+  }
+
+  private getKanjiMatches(surfaceForm: string, tokenReading: string): RegExpExecArray | null {
+    // from 
+    // surfaceForm: ブラウン管
+    // tokenReading: ぶらうんかん 
+    // results in regex: ブラウン(.*)
+    // matches [ 'ぶらうんかん', 'かん', index: 0, input: 'ぶらうんかん', groups: undefined ]
+    const regexPattern = surfaceForm
+      .split('')
+      .map((piece: string) => {
+        if (isKanji(piece)) {
+          return '(.*)'
+        }
+        if (isKatakana(piece)) {
+          return toRawHiragana(piece)
+        }
+        return piece
+      }).join('')
+
+    const regex = new RegExp(regexPattern)
+    return regex.exec(tokenReading)
+  }
+
+  private replaceKanjiWithReading(surfaceForm: string, tokenReading: string): string {
+    const kanjiMatches = this.getKanjiMatches(surfaceForm, tokenReading)
+
+    if (!kanjiMatches) {
+      return tokenReading
+    }
+
+    let kanjiMatchToUse = 1
+
+    return surfaceForm.split('').map((currentChar: string) => {
+      if (isKanji(currentChar)) {
+        return kanjiMatches[kanjiMatchToUse++]
+      }
+      return currentChar
+    }).join('')
   }
 }

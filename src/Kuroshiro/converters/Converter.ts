@@ -1,3 +1,5 @@
+import { KuromojiToken } from "../../analyzers/KuromojiAnalyzer";
+
 export interface Converter {
-  convert(): string
+  convert(tokens: KuromojiToken[]): string
 }

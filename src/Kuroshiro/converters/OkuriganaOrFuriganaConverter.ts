@@ -1,42 +1,42 @@
-import { KuromojiParsedResponse } from '../../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
 import { ConversionMode, ConvertOptions, Sillabary } from '../Kuroshiro'
 import { RawRomajiConverter } from '../RawRomajiConverter'
 import { getTextType, isKanji, isKatakana, TextType, toRawHiragana, toRawKatakana } from '../util'
 import { Converter } from './Converter'
 
 export class OkuriganaOrFuriganaConverter implements Converter {
-  constructor(private options: ConvertOptions, private tokens: KuromojiParsedResponse[]) {}
+  constructor(private options: ConvertOptions) {}
 
-  convert(): string {
+  convert(tokens: KuromojiToken[]): string {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     const notations: any[] = [] // [basic, basic_type[1=kanji,2=kana,3=others], notation, pronunciation]
-    for (let i = 0; i < this.tokens.length; i++) {
-      const currentToken = this.tokens[i]
-      const strType: TextType = getTextType(currentToken.surface_form)
+    for (let i = 0; i < tokens.length; i++) {
+      const currentToken = tokens[i]
+      const strType: TextType = getTextType(currentToken.surfaceForm)
       switch (strType) {
 
       case TextType.PureKanji:
-        notations.push([currentToken.surface_form, 1, toRawHiragana(currentToken.reading), currentToken.pronunciation || currentToken.reading])
+        notations.push([currentToken.surfaceForm, 1, toRawHiragana(currentToken.reading), currentToken.pronunciation || currentToken.reading])
         break
       case TextType.KanjiKanaMix:
         let pattern = ''
         let isLastTokenKanji = false
         const subs = [] // recognize kanjis and group them
-        for (let c = 0; c < currentToken.surface_form.length; c++) {
-          if (isKanji(currentToken.surface_form[c])) {
-            if (!isLastTokenKanji) { // ignore successive kanji this.tokens (#10)
+        for (let c = 0; c < currentToken.surfaceForm.length; c++) {
+          if (isKanji(currentToken.surfaceForm[c])) {
+            if (!isLastTokenKanji) { // ignore successive kanji tokens (#10)
               isLastTokenKanji = true
               pattern += '(.+)'
-              subs.push(currentToken.surface_form[c])
+              subs.push(currentToken.surfaceForm[c])
             }
             else {
-              subs[subs.length - 1] += currentToken.surface_form[c]
+              subs[subs.length - 1] += currentToken.surfaceForm[c]
             }
           }
           else {
             isLastTokenKanji = false
-            subs.push(currentToken.surface_form[c])
-            pattern += isKatakana(currentToken.surface_form[c]) ? toRawHiragana(currentToken.surface_form[c]) : currentToken.surface_form[c]
+            subs.push(currentToken.surfaceForm[c])
+            pattern += isKatakana(currentToken.surfaceForm[c]) ? toRawHiragana(currentToken.surfaceForm[c]) : currentToken.surfaceForm[c]
           }
         }
         const reg = new RegExp(`^${pattern}$`)
@@ -54,17 +54,17 @@ export class OkuriganaOrFuriganaConverter implements Converter {
           }
         }
         else {
-          notations.push([currentToken.surface_form, 1, toRawHiragana(currentToken.reading), currentToken.pronunciation || currentToken.reading])
+          notations.push([currentToken.surfaceForm, 1, toRawHiragana(currentToken.reading), currentToken.pronunciation || currentToken.reading])
         }
         break
       case TextType.PureKana:
-        for (let c2 = 0; c2 < currentToken.surface_form.length; c2++) {
-          notations.push([currentToken.surface_form[c2], 2, toRawHiragana(currentToken.reading[c2]), (currentToken.pronunciation && currentToken.pronunciation[c2]) || currentToken.reading[c2]])
+        for (let c2 = 0; c2 < currentToken.surfaceForm.length; c2++) {
+          notations.push([currentToken.surfaceForm[c2], 2, toRawHiragana(currentToken.reading[c2]), (currentToken.pronunciation && currentToken.pronunciation[c2]) || currentToken.reading[c2]])
         }
         break
       case TextType.Others:
-        for (let c3 = 0; c3 < currentToken.surface_form.length; c3++) {
-          notations.push([currentToken.surface_form[c3], 3, currentToken.surface_form[c3], currentToken.surface_form[c3]])
+        for (let c3 = 0; c3 < currentToken.surfaceForm.length; c3++) {
+          notations.push([currentToken.surfaceForm[c3], 3, currentToken.surfaceForm[c3], currentToken.surfaceForm[c3]])
         }
         break
       }

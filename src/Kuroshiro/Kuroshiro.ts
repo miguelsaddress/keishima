@@ -1,4 +1,4 @@
-import { KuromojiAnalyzer, KuromojiParsedResponse } from '../analyzers/KuromojiAnalyzer'
+import { KuromojiAnalyzer, KuromojiToken } from '../analyzers/KuromojiAnalyzer'
 import { Converter } from './converters/Converter'
 import { NormalOrSpacedConverter } from './converters/NormalOrSpacedConverter'
 import { NullConverter } from './converters/NullConverter'
@@ -59,20 +59,20 @@ export class Kuroshiro {
       ...conversionOptions
     }
 
-    const rawTokens: KuromojiParsedResponse[] = await this.analyzer.analyze(str)
-    const tokens: KuromojiParsedResponse[] = new TokensPatcher(rawTokens).patch()
+    const rawTokens: KuromojiToken[] = await this.analyzer.analyze(str)
+    const tokens: KuromojiToken[] = new TokensPatcher(rawTokens).patch()
 
-    const converter = this.getConverter(options, tokens)
-    return converter.convert()
+    const converter = this.getConverter(options)
+    return converter.convert(tokens)
   }
 
-  private getConverter(options: ConvertOptions, tokens: KuromojiParsedResponse[]): Converter {
+  private getConverter(options: ConvertOptions): Converter {
     if (options.mode === ConversionMode.Normal || options.mode === ConversionMode.Spaced) {
-      return new NormalOrSpacedConverter(options, tokens)
+      return new NormalOrSpacedConverter(options)
     }
     else if (options.mode === ConversionMode.Okurigana || options.mode === ConversionMode.Furigana) {
-      return new OkuriganaOrFuriganaConverter(options, tokens)
+      return new OkuriganaOrFuriganaConverter(options)
     }
-    return new NullConverter(options, tokens)
+    return new NullConverter(options)
   }
 }
