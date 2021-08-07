@@ -81,7 +81,7 @@ export const getTextType = (str: string): TextType => {
   return TextType.Others
 }
 
-export const kanaToHiragna = (str: string): string => {
+export const kanaToHiragana = (str: string): string => {
   return toRawHiragana(str)
 }
 

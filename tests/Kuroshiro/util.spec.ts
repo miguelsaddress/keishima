@@ -73,19 +73,19 @@ describe('Tests for Util Functions', () => {
   describe('kanaToHiragana', () => {
     it('should convert from katakana to hiragana', () => {
       const text = 'サカナ'
-      const result = Util.kanaToHiragna(text)
+      const result = Util.kanaToHiragana(text)
       expect(result).toEqual('さかな')
     })
 
     it('should convert from katakana to hiragana, respecting the existing hiragana', () => {
       const text = 'サカな'
-      const result = Util.kanaToHiragna(text)
+      const result = Util.kanaToHiragana(text)
       expect(result).toEqual('さかな')
     })
 
     it('should not alter the text if it is all hiragana', () => {
       const text = 'さかな'
-      const result = Util.kanaToHiragna(text)
+      const result = Util.kanaToHiragana(text)
       expect(result).toEqual('さかな')
     })
   })
