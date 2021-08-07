@@ -1,4 +1,4 @@
-import { TokensPatcher } from '../../src/Kuroshiro/TokensPatcher'
+import { TokensPatcher } from '../../src/Keishima/TokensPatcher'
 
 describe('Tests for TokensPatcher', () => {
 

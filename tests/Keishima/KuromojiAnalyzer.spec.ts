@@ -1,6 +1,6 @@
-import { KuromojiAnalyzer } from '../../src/Kuroshiro/KuromojiAnalyzer'
+import { KuromojiAnalyzer } from '../../src/Keishima/KuromojiAnalyzer'
 
-describe('kuroshiro-analyzer-kuromoji Node Test', () => {
+describe('KuromojiAnalyzer class Tests', () => {
   const EXAMPLE_TEXT = 'すもももももももものうち'
   const EXAMPLE_TEXT_WORDS_COUNT = 7 // すもも _ も _ もも _ もも _ も _ の _ うち
   let analyzer

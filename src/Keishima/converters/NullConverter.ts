@@ -1,5 +1,5 @@
 import { KuromojiToken } from '../KuromojiAnalyzer'
-import { ConvertOptions } from '../Kuroshiro'
+import { ConvertOptions } from '../Keishima'
 import { Converter } from './Converter'
 
 export class NullConverter implements Converter {

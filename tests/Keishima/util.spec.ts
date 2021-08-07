@@ -1,4 +1,4 @@
-import { Util } from '../../src/Kuroshiro'
+import { Util } from '../../src/Keishima'
 
 describe('Tests for Util Functions', () => {
 

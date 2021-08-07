@@ -1,13 +1,13 @@
 {
-  "name": "japatron",
-  "description": "To be done",
-  "license": "To be done",
+  "name": "keishima",
+  "description": "Keishima (景島 From KEItarou uraSHIMA, from anime Love Hina) is a port to typescript of [Kuroshiro] (https://github.com/hexenq/kuroshiro) and [kuroshiro-analyzer-kuromoji](https://github.com/hexenq/kuroshiro-analyzer-kuromoji) (and slightly simplified) authored by [HexenQ] (https://github.com/hexenq). Keishima allows getting the furigana and okurigana versions of a text with kanji",
+  "license": "MIT",
   "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/monatheoctocat/my_package.git"
   },
-  "keywords": [],
+  "keywords": ["okurigana", "furigana", "kanji", "romaji", "japanese", "kuroshiro"],
   "author": "Miguel Angel Moreno",
   "bugs": {
     "url": "https://github.com/monatheoctocat/my_package/issues"

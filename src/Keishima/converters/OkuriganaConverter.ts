@@ -1,5 +1,5 @@
 import { KuromojiToken } from '../KuromojiAnalyzer'
-import { ConvertOptions, Sillabary } from '../Kuroshiro'
+import { ConvertOptions, Sillabary } from '../Keishima'
 import { RawRomajiConverter } from './RawRomajiConverter'
 import { toRawKatakana } from '../util'
 import { Converter } from './Converter'

@@ -29,7 +29,7 @@ export type ConvertOptions = {
   delimiterClose: string
 }
 
-export class Kuroshiro {
+export class Keishima {
   private analyzer: KuromojiAnalyzer
 
   constructor() {
