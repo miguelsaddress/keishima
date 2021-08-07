@@ -1,4 +1,4 @@
-import { KuromojiToken } from '../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from './KuromojiAnalyzer'
 import { hasHiragana, hasJapanese, isKana, toRawKatakana } from './util'
 
 export class TokensPatcher {

@@ -1,4 +1,4 @@
-import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from '../KuromojiAnalyzer'
 import { ConvertOptions, Sillabary } from '../Kuroshiro'
 import { RawRomajiConverter } from './RawRomajiConverter'
 import { toRawKatakana } from '../util'

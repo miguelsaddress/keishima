@@ -1,4 +1,4 @@
-import { KuromojiAnalyzer, KuromojiToken } from '../analyzers/KuromojiAnalyzer'
+import { KuromojiAnalyzer, KuromojiToken } from './KuromojiAnalyzer'
 import { Converter } from './converters/Converter'
 import { NullConverter } from './converters/NullConverter'
 import { FuriganaConverter } from './converters/FuriganaConverter'

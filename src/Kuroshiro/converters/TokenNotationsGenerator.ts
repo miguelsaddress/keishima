@@ -1,4 +1,4 @@
-import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from '../KuromojiAnalyzer'
 import { getTextType, isKanji, isKatakana, TextType, toRawHiragana, toRawKatakana } from '../util'
 
 export enum ElementType {

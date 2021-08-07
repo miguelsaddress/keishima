@@ -1,4 +1,4 @@
-import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
+import { KuromojiToken } from '../KuromojiAnalyzer'
 import { ConvertOptions } from '../Kuroshiro'
 import { Converter } from './Converter'
 

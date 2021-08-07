@@ -1,4 +1,4 @@
-import { KuromojiAnalyzer } from '../../src/analyzers/KuromojiAnalyzer'
+import { KuromojiAnalyzer } from '../../src/Kuroshiro/KuromojiAnalyzer'
 
 describe('kuroshiro-analyzer-kuromoji Node Test', () => {
   const EXAMPLE_TEXT = 'すもももももももものうち'
