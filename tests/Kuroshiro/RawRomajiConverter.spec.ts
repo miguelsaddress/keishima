@@ -1,4 +1,4 @@
-import { RawRomajiConverter, RomanizationSystem } from '../../src/Kuroshiro/RawRomajiConverter'
+import { RawRomajiConverter, RomanizationSystem } from '../../src/Kuroshiro/converters/RawRomajiConverter'
 
 describe('RawRomajiConverter', () => {
   const converter = new RawRomajiConverter()

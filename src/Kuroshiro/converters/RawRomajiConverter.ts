@@ -1,6 +1,6 @@
-import { HEPBURN_SHIKI_MAP } from './romaji-systems/hepburnShiki'
-import { NIPPON_SHIKI_MAP } from './romaji-systems/nipponShiki'
-import { PASSPORT_SHIKI_MAP } from './romaji-systems/passportShiki'
+import { HEPBURN_SHIKI_MAP } from '../romaji-systems/hepburnShiki'
+import { NIPPON_SHIKI_MAP } from '../romaji-systems/nipponShiki'
+import { PASSPORT_SHIKI_MAP } from '../romaji-systems/passportShiki'
 
 export enum RomanizationSystem {
   Nippon = 'nippon',
@@ -44,8 +44,7 @@ export class RawRomajiConverter {
         for (let i = 0; i < indices.length; i++) {
           if (i === 0) {
             mStr += `${str.slice(0, indices[i])}'`
-          }
-          else {
+          } else {
             mStr += `${str.slice(indices[i - 1], indices[i])}'`
           }
         }
@@ -62,8 +61,7 @@ export class RawRomajiConverter {
       if (theResult) {
         result += theResult
         pnt += 2
-      }
-      else {
+      } else {
         theResult = theSystem[ch = str.substring(pnt, pnt + 1)]
         result += (theResult) ? theResult : ch
         pnt += 1

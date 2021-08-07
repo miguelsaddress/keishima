@@ -1,6 +1,6 @@
 import { KuromojiToken } from '../../analyzers/KuromojiAnalyzer'
 import { ConversionMode, ConvertOptions, Sillabary } from '../Kuroshiro'
-import { RawRomajiConverter } from '../RawRomajiConverter'
+import { RawRomajiConverter } from './RawRomajiConverter'
 import { hasJapanese, hasKanji, hasKatakana, isKanji, isKatakana, toRawHiragana } from '../util'
 import { Converter } from './Converter'
 

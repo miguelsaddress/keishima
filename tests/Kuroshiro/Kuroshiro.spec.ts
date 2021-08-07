@@ -1,5 +1,5 @@
 import { ConversionMode, Kuroshiro, Sillabary } from '../../src/Kuroshiro'
-import { RomanizationSystem } from '../../src/Kuroshiro/RawRomajiConverter'
+import { RomanizationSystem } from '../../src/Kuroshiro/converters/RawRomajiConverter'
 
 describe('Kuroshiro Class Tests', () => {
   const EXAMPLE_TEXT = '感じ取れたら手を繋ごう、重なるのは人生のライン and レミリア最高！'
