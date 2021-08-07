@@ -5,12 +5,12 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/monatheoctocat/my_package.git"
+    "url": "https://github.com/miguelsaddress/keishima.git"
   },
   "keywords": ["okurigana", "furigana", "kanji", "romaji", "japanese", "kuroshiro"],
   "author": "Miguel Angel Moreno",
   "bugs": {
-    "url": "https://github.com/monatheoctocat/my_package/issues"
+    "url": "https://github.com/miguelsaddress/keishima/issues"
   },
   "scripts": {
     "build": "tsc",
